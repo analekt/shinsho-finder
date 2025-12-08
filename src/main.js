@@ -53,8 +53,17 @@ async function main() {
     const newISBNs = currentISBNs.filter(isbn => !previousISBNSet.has(isbn));
     console.log(`New ISBNs found: ${newISBNs.length}\n`);
 
+    // First-time initialization check
+    const isFirstRun = previousISBNs.length === 0;
+    if (isFirstRun) {
+      console.log('⚠️  First run detected: Initializing ISBN database without fetching details.');
+      console.log('   New books will be detected starting from the next run.\n');
+    }
+
     if (newISBNs.length === 0) {
       console.log('No new ISBNs to process. Updating RSS feed with existing data...\n');
+    } else if (isFirstRun) {
+      console.log('Skipping book details fetch on first run to avoid timeout.\n');
     } else {
       // Step 4: Fetch details for new ISBNs
       const newBooks = await fetchDetails(newISBNs);
