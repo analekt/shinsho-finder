@@ -36,8 +36,20 @@ export async function generateRSS(shinshoBooks, outputPath) {
     description += `<p><strong>ISBN:</strong> ${book.isbn}</p>\n`;
     description += `<p><strong>発売日:</strong> ${book.publishedDate}</p>\n`;
 
+    if (book.pageCount) {
+      description += `<p><strong>ページ数:</strong> ${book.pageCount}ページ</p>\n`;
+    }
+
     if (book.description) {
-      description += `<p>${book.description}</p>\n`;
+      description += `<h4>内容紹介</h4>\n<p>${book.description}</p>\n`;
+    }
+
+    if (book.tableOfContents) {
+      description += `<h4>目次</h4>\n<pre>${book.tableOfContents}</pre>\n`;
+    }
+
+    if (book.authorBio) {
+      description += `<h4>著者略歴</h4>\n<p>${book.authorBio}</p>\n`;
     }
 
     description += `<div style="clear: both;"></div>`;

@@ -78,10 +78,12 @@ export function filterShinsho(books) {
 
       // Get author information
       let author = 'N/A';
+      let authorBio = '';
       const contributors = descriptiveDetail.Contributor || [];
       if (contributors.length > 0) {
         const mainAuthor = contributors.find(c => c.ContributorRole?.[0] === 'A01') || contributors[0];
         author = mainAuthor?.PersonName?.content || 'N/A';
+        authorBio = mainAuthor?.BiographicalNote || '';
       }
 
       // Get publisher
@@ -95,13 +97,28 @@ export function filterShinsho(books) {
         publishedDate = pubDates[0];
       }
 
-      // Get description/summary
+      // Get page count
+      let pageCount = '';
+      const extents = descriptiveDetail.Extent || [];
+      for (const extent of extents) {
+        if (extent.ExtentType === '00' || extent.ExtentType === '11') { // Page count
+          pageCount = extent.ExtentValue || '';
+          break;
+        }
+      }
+
+      // Get description/summary and table of contents
       const textContents = collateralDetail.TextContent || [];
       let description = '';
+      let tableOfContents = '';
       for (const text of textContents) {
-        if (text.TextType === '02' || text.TextType === '03') { // Short or long description
-          description = text.Text || '';
-          break;
+        const textType = text.TextType;
+        const textContent = text.Text || '';
+
+        if (textType === '02' || textType === '03') { // Short or long description
+          description = textContent;
+        } else if (textType === '04') { // Table of contents
+          tableOfContents = textContent;
         }
       }
 
@@ -122,10 +139,13 @@ export function filterShinsho(books) {
         isbn,
         title,
         author,
+        authorBio,
         publisher,
         series: seriesName,
         publishedDate,
+        pageCount,
         description,
+        tableOfContents,
         coverImageUrl,
         discoveredAt: new Date().toISOString(),
       });
