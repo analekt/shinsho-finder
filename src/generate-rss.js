@@ -54,14 +54,20 @@ export async function generateRSS(shinshoBooks, outputPath) {
 
     description += `<div style="clear: both;"></div>`;
 
+    // Build Amazon URL using ISBN-10 if available
+    const amazonUrl = book.isbn10
+      ? `https://www.amazon.co.jp/dp/${book.isbn10}/`
+      : `https://www.amazon.co.jp/s?k=${book.isbn}`;
+
     feed.item({
       title: book.title,
       description: description,
-      url: `https://openbd.jp/get?isbn=${book.isbn}`,
+      url: amazonUrl,
       guid: book.isbn,
       date: new Date(book.discoveredAt),
       custom_elements: [
         { 'isbn': book.isbn },
+        { 'isbn10': book.isbn10 || '' },
         { 'series': book.series },
         { 'author': book.author },
         { 'publisher': book.publisher },

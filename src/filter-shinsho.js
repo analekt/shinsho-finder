@@ -1,4 +1,33 @@
 /**
+ * Convert ISBN-13 to ISBN-10
+ * @param {string} isbn13 - 13-digit ISBN
+ * @returns {string} 10-digit ISBN or empty string if conversion fails
+ */
+function convertToISBN10(isbn13) {
+  // Remove any hyphens
+  const cleanISBN = isbn13.replace(/-/g, '');
+
+  // ISBN-13 must start with 978 to be convertible to ISBN-10
+  if (!cleanISBN.startsWith('978') || cleanISBN.length !== 13) {
+    return '';
+  }
+
+  // Extract the 9 digits after 978
+  const isbn10Base = cleanISBN.substring(3, 12);
+
+  // Calculate ISBN-10 check digit
+  let sum = 0;
+  for (let i = 0; i < 9; i++) {
+    sum += parseInt(isbn10Base[i]) * (10 - i);
+  }
+
+  const checkDigit = (11 - (sum % 11)) % 11;
+  const checkChar = checkDigit === 10 ? 'X' : checkDigit.toString();
+
+  return isbn10Base + checkChar;
+}
+
+/**
  * Filter books to find shinsho (新書) based on series name
  * @param {Object[]} books - Array of book objects from openBD API
  * @returns {Object[]} Array of shinsho books with relevant information
@@ -74,6 +103,7 @@ export function filterShinsho(books) {
       const productIdentifier = onix.ProductIdentifier || {};
 
       const isbn = productIdentifier.IDValue || book.isbn || 'N/A';
+      const isbn10 = convertToISBN10(isbn);
       const title = descriptiveDetail.TitleDetail?.TitleElement?.TitleText?.content || 'N/A';
 
       // Get author information
@@ -137,6 +167,7 @@ export function filterShinsho(books) {
 
       shinshoBooks.push({
         isbn,
+        isbn10,
         title,
         author,
         authorBio,
