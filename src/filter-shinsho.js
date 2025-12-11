@@ -1,4 +1,34 @@
 /**
+ * Check if a publication date (YYYYMM format) is in the future (current month or later)
+ * @param {string} pubdate - Publication date in YYYYMM format
+ * @returns {boolean} True if the publication date is current month or future
+ */
+function isFuturePublication(pubdate) {
+  if (!pubdate || pubdate.length < 6) {
+    return false;
+  }
+
+  const pubYear = parseInt(pubdate.substring(0, 4));
+  const pubMonth = parseInt(pubdate.substring(4, 6));
+
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth() + 1;
+
+  // Future year
+  if (pubYear > currentYear) {
+    return true;
+  }
+
+  // Current year, current month or future month
+  if (pubYear === currentYear && pubMonth >= currentMonth) {
+    return true;
+  }
+
+  return false;
+}
+
+/**
  * Convert ISBN-13 to ISBN-10
  * @param {string} isbn13 - 13-digit ISBN
  * @returns {string} 10-digit ISBN or empty string if conversion fails
@@ -97,6 +127,12 @@ export function filterShinsho(books) {
       // Skip if not a shinsho
       if (!isShinsho) continue;
 
+      // Get publication date from summary and check if it's a future publication
+      const pubdate = book?.summary?.pubdate || '';
+      if (!isFuturePublication(pubdate)) {
+        continue; // Skip books that are already published
+      }
+
       // Extract relevant information
       const collateralDetail = onix.CollateralDetail || {};
       const publishingDetail = onix.PublishingDetail || {};
@@ -120,11 +156,12 @@ export function filterShinsho(books) {
       const publisher = publishingDetail.Imprint?.ImprintName ||
                        publishingDetail.Publisher?.[0]?.PublisherName || 'N/A';
 
-      // Get publication date
-      const pubDates = publishingDetail.PublicationDate || [];
+      // Format publication date (YYYYMM -> YYYY年MM月)
       let publishedDate = 'N/A';
-      if (pubDates.length > 0) {
-        publishedDate = pubDates[0];
+      if (pubdate && pubdate.length >= 6) {
+        const year = pubdate.substring(0, 4);
+        const month = pubdate.substring(4, 6);
+        publishedDate = `${year}年${parseInt(month)}月`;
       }
 
       // Get page count
