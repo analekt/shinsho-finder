@@ -2,8 +2,8 @@ name: Daily Shinsho Check
 
 on:
   schedule:
-    # Run every day at 9:00 AM JST (00:00 UTC)
-    - cron: '0 0 * * *'
+    # Run every day at 7:00 AM JST (22:00 UTC previous day)
+    - cron: '0 22 * * *'
   workflow_dispatch: # Allow manual trigger
 
 permissions:
