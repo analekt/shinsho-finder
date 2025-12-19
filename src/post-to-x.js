@@ -101,6 +101,21 @@ async function postTweet(text) {
 }
 
 /**
+ * Convert text to a valid hashtag by removing invalid characters
+ * @param {string} text - Text to convert
+ * @returns {string} Valid hashtag (without # prefix)
+ */
+function toHashtag(text) {
+  if (!text) return '';
+  // Remove spaces, punctuation, and special characters that break hashtags
+  // Keep Japanese characters, alphanumeric, and underscores
+  return text
+    .replace(/[\s\u3000]+/g, '')  // Remove spaces (including full-width)
+    .replace(/[・\-\+\=\;\:\,\.\!\?\(\)\[\]\{\}\/\\\"\'<>]+/g, '')  // Remove punctuation
+    .replace(/[＋＝；：，．！？（）［］｛｝／＼＜＞]+/g, '');  // Remove full-width punctuation
+}
+
+/**
  * Format book data into tweet text
  * @param {Object} book - Book object
  * @returns {string} Formatted tweet text
@@ -109,6 +124,15 @@ function formatTweet(book) {
   const amazonUrl = book.isbn10
     ? `https://www.amazon.co.jp/dp/${book.isbn10}/?tag=${AFFILIATE_TAG}`
     : `https://www.amazon.co.jp/s?k=${book.isbn}&tag=${AFFILIATE_TAG}`;
+
+  // Create hashtags for series and author
+  const seriesTag = toHashtag(book.series);
+  const authorTag = toHashtag(book.author);
+
+  // Build hashtag string
+  const hashtags = ['#新書', '#新刊'];
+  if (seriesTag) hashtags.push(`#${seriesTag}`);
+  if (authorTag) hashtags.push(`#${authorTag}`);
 
   return `📚 新書新刊
 
@@ -119,7 +143,7 @@ function formatTweet(book) {
 
 ${amazonUrl}
 
-#新書 #新刊`;
+${hashtags.join(' ')}`;
 }
 
 /**
