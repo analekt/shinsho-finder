@@ -4,11 +4,28 @@
         <description><![CDATA[openBD APIを使用した新書の新刊情報フィード]]></description>
         <link>https://analekt.github.io/shinsho-finder/</link>
         <generator>RSS for Node</generator>
-        <lastBuildDate>Sat, 20 Dec 2025 02:30:54 GMT</lastBuildDate>
+        <lastBuildDate>Sat, 20 Dec 2025 11:06:33 GMT</lastBuildDate>
         <atom:link href="https://analekt.github.io/shinsho-finder/index.xml" rel="self" type="application/rss+xml"/>
-        <pubDate>Sat, 20 Dec 2025 02:30:54 GMT</pubDate>
+        <pubDate>Sat, 20 Dec 2025 11:06:33 GMT</pubDate>
         <language><![CDATA[ja]]></language>
         <ttl>1440</ttl>
+        <item>
+            <title><![CDATA[定年前後のキャリア戦略 : データで読み解く60代社員のリアル]]></title>
+            <description><![CDATA[<p><strong>著者:</strong> 藤井薫</p>
+<p><strong>出版社:</strong> 中央公論新社</p>
+<p><strong>シリーズ:</strong> 中公新書ラクレ</p>
+<p><strong>ISBN:</strong> 9784121508621</p>
+<p><strong>発売日:</strong> 発売日未定</p>
+<div style="clear: both;"></div>]]></description>
+            <link>https://www.amazon.co.jp/dp/4121508629/</link>
+            <guid isPermaLink="false">9784121508621</guid>
+            <pubDate>Sat, 20 Dec 2025 11:06:33 GMT</pubDate>
+            <isbn>9784121508621</isbn>
+            <isbn10>4121508629</isbn10>
+            <series>中公新書ラクレ</series>
+            <author>藤井薫</author>
+            <publisher>中央公論新社</publisher>
+        </item>
         <item>
             <title><![CDATA[５０歳からの不動産 : 不動産屋と銀行に煽られないために]]></title>
             <description><![CDATA[<p><strong>著者:</strong> 牧野知弘</p>
