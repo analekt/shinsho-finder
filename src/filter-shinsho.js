@@ -1,40 +1,9 @@
 /**
- * Check if a publication date (YYYYMM format) is in the future (current month or later)
- * @param {string} pubdate - Publication date in YYYYMM format
- * @returns {boolean} True if the publication date is current month or future
- */
-function isFuturePublication(pubdate) {
-  if (!pubdate || pubdate.length < 6) {
-    return false;
-  }
-
-  const pubYear = parseInt(pubdate.substring(0, 4));
-  const pubMonth = parseInt(pubdate.substring(4, 6));
-
-  const now = new Date();
-  const currentYear = now.getFullYear();
-  const currentMonth = now.getMonth() + 1;
-
-  // Future year
-  if (pubYear > currentYear) {
-    return true;
-  }
-
-  // Current year, current month or future month
-  if (pubYear === currentYear && pubMonth >= currentMonth) {
-    return true;
-  }
-
-  return false;
-}
-
-/**
- * Check if a book was recently added to openBD (within the last 3 months)
- * Used as fallback when pubdate is not available
+ * Check if a book was added to openBD in the current month or later
  * @param {string} datekoukai - Date the book was published on openBD (YYYY-MM-DD format)
- * @returns {boolean} True if the book was recently added
+ * @returns {boolean} True if the book was added in the current month or later
  */
-function isRecentlyAdded(datekoukai) {
+function isCurrentMonthOrLater(datekoukai) {
   if (!datekoukai) {
     return false;
   }
@@ -44,11 +13,11 @@ function isRecentlyAdded(datekoukai) {
     return false;
   }
 
+  // Get the first day of the current month
   const now = new Date();
-  const threeMonthsAgo = new Date(now);
-  threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+  const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
-  return koukai >= threeMonthsAgo;
+  return koukai >= firstDayOfMonth;
 }
 
 /**
@@ -159,19 +128,16 @@ export function filterShinsho(books) {
       // Skip if not a shinsho
       if (!isShinsho) continue;
 
-      // Get publication date from summary and check if it's a future publication
-      const pubdate = book?.summary?.pubdate || '';
+      // Get datekoukai from hanmoto and check if it's from the current month or later
       const datekoukai = book?.hanmoto?.datekoukai || '';
 
-      // Check if this is a valid new book:
-      // 1. Has a future publication date, OR
-      // 2. No pubdate but was recently added to openBD (likely upcoming)
-      const hasFuturePubdate = isFuturePublication(pubdate);
-      const isRecentWithNoPubdate = !pubdate && isRecentlyAdded(datekoukai);
-
-      if (!hasFuturePubdate && !isRecentWithNoPubdate) {
-        continue; // Skip books that are already published
+      // Only include books that were added to openBD in the current month or later
+      if (!isCurrentMonthOrLater(datekoukai)) {
+        continue; // Skip books that were added before this month
       }
+
+      // Get publication date from summary (for display purposes only)
+      const pubdate = book?.summary?.pubdate || '';
 
       // Extract relevant information
       const collateralDetail = onix.CollateralDetail || {};

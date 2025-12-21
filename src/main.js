@@ -4,7 +4,7 @@ import { fetchCoverage } from './fetch-coverage.js';
 import { fetchDetails } from './fetch-details.js';
 import { filterShinsho } from './filter-shinsho.js';
 import { generateRSS } from './generate-rss.js';
-import { postNewBooksToX } from './post-to-x.js';
+import { postNewBooksToX, loadPostedISBNs } from './post-to-x.js';
 
 const DATA_DIR = path.join(process.cwd(), 'data');
 const DOCS_DIR = path.join(process.cwd(), 'docs');
@@ -94,12 +94,16 @@ async function main() {
     await saveJSON(ISBN_LIST_PATH, currentISBNs);
     console.log(`✓ Saved ISBN list (${currentISBNs.length} ISBNs)\n`);
 
-    // Step 8: Generate RSS feed from complete database
+    // Step 8: Load database and get unposted books
     const shinshoDatabase = await loadJSON(SHINSHO_DB_PATH, []);
-    await generateRSS(shinshoDatabase, RSS_OUTPUT_PATH);
+    const postedISBNs = await loadPostedISBNs();
+    const unpostedBooks = shinshoDatabase.filter(book => !postedISBNs.has(book.isbn));
 
-    // Step 9: Post any unposted books to X (handles cases where books were found but not posted)
-    await postNewBooksToX(shinshoDatabase);
+    // Step 9: Generate RSS feed with only unposted (new) books
+    await generateRSS(unpostedBooks, RSS_OUTPUT_PATH);
+
+    // Step 10: Post unposted books to X
+    await postNewBooksToX(unpostedBooks);
 
     console.log('\n=== Shinsho Finder Completed Successfully ===');
   } catch (error) {

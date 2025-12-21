@@ -8,7 +8,7 @@ const AFFILIATE_TAG = 'shinshofinder-22';
  * Load list of already posted ISBNs
  * @returns {Promise<Set<string>>} Set of posted ISBNs
  */
-async function loadPostedISBNs() {
+export async function loadPostedISBNs() {
   try {
     const data = await fs.readFile(POSTED_ISBNS_PATH, 'utf-8');
     return new Set(JSON.parse(data));
