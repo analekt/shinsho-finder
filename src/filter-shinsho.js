@@ -86,6 +86,7 @@ export function filterShinsho(books) {
     'サイエンス・アイ新書',
     '星海社新書',
     'PHPビジネス新書',
+    'ハヤカワ新書',
   ];
 
   const shinshoBooks = [];
