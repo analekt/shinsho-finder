@@ -115,6 +115,55 @@ function toHashtag(text) {
     .replace(/[＋＝；：，．！？（）［］｛｝／＼＜＞]+/g, '');  // Remove full-width punctuation
 }
 
+// Known shinsho labels for hashtag extraction
+const SHINSHO_LABELS = [
+  '岩波新書',
+  '中公新書',
+  'ちくま新書',
+  '講談社現代新書',
+  '文春新書',
+  '新潮新書',
+  '集英社新書',
+  '光文社新書',
+  '幻冬舎新書',
+  'PHP新書',
+  '平凡社新書',
+  '小学館新書',
+  'ベスト新書',
+  '角川新書',
+  'ちくまプリマー新書',
+  '中公新書ラクレ',
+  '講談社＋α新書',
+  '講談社+α新書',
+  'SB新書',
+  'ブルーバックス',
+  '岩波ジュニア新書',
+  '朝日新書',
+  '祥伝社新書',
+  '扶桑社新書',
+  '宝島社新書',
+  'NHK出版新書',
+  'サイエンス・アイ新書',
+  '星海社新書',
+  'PHPビジネス新書',
+  'ハヤカワ新書',
+];
+
+/**
+ * Extract the shinsho label name from series string
+ * @param {string} series - Series name (e.g., "岩波新書 ； 新赤版 2097")
+ * @returns {string} The matching shinsho label or the original series
+ */
+function extractShinshoLabel(series) {
+  if (!series) return '';
+  for (const label of SHINSHO_LABELS) {
+    if (series.includes(label)) {
+      return label;
+    }
+  }
+  return series;
+}
+
 /**
  * Format book data into tweet text
  * @param {Object} book - Book object
@@ -126,7 +175,8 @@ function formatTweet(book) {
     : `https://www.amazon.co.jp/s?k=${book.isbn}&tag=${AFFILIATE_TAG}`;
 
   // Create hashtags for series and author
-  const seriesTag = toHashtag(book.series);
+  const seriesLabel = extractShinshoLabel(book.series);
+  const seriesTag = toHashtag(seriesLabel);
   const authorTag = toHashtag(book.author);
 
   // Build hashtag string
